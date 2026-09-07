@@ -22,6 +22,31 @@ body:
       required: true
 
   - type: textarea
+    id: gcp-resources
+    attributes:
+      label: Mention list of GCP resources that are going to be affected
+      description: List every GCP resource this request will create, change, or delete (projects, Cloud Run services, Cloud SQL, buckets, IAM, etc.).
+      placeholder: |
+        e.g.
+        - Cloud Run service: cost-anomaly-alerter
+        - Pub/Sub topic: cost-anomaly-events
+        - IAM: roles/monitoring.notificationChannelEditor on project lili-prod
+    validations:
+      required: true
+
+  - type: dropdown
+    id: requires-redeployment
+    attributes:
+      label: Requires redeployment?
+      description: Will this request require a redeploy of an existing service or environment?
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: textarea
     id: acceptance-criteria
     attributes:
       label: Acceptance criteria
