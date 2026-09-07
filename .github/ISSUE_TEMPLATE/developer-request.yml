@@ -1,0 +1,34 @@
+name: Developer Request
+description: Raise a new request for a developer to pick up.
+title: "[Request] "
+labels: ["developer-request"]
+body:
+  - type: textarea
+    id: project-status
+    attributes:
+      label: What is your project status for this request?
+      description: Where does this sit today — not started, blocked, partially built, in production?
+      placeholder: e.g. Terraform module exists but the pipeline stage was never wired up.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expectation
+    attributes:
+      label: What do you expect from devops operations in this request?
+      description: Describe the work you need from DevOps for this request.
+      placeholder: e.g. Add a nightly cost-anomaly alert to Slack, wire it into the existing pipeline, and document the runbook.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List the conditions that must be true for this request to be considered done.
+      value: |
+        - [ ] 
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
