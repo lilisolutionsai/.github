@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         **LiLi automation handoff standard, v0.2 (draft, 2026-11-13).**
-        Built on Ken's claim generation and eligibility handoffs (LiLi-claim-generation#313, lili-ecw-automation#54).
+        Based on earlier automation handoffs; the internal handoff standard holds the full reference.
         When signed off, copy this issue into `docs/HANDOFF.md` in the automation's repo, and fill `ops/estimates.yaml` from `ops-estimates.template.yaml`.
 
         Keep this an index. Put long procedures in linked docs (operations.md, onboarding-guide.md, disaster-recovery.md) and link to them.
@@ -18,7 +18,7 @@ body:
         - No "TBD" in owner, covering engineer or escalation. If it is not decided, write "OPEN" and the name of the person deciding.
         - A drill or test date older than 12 months, or older than the last eCW upgrade, is stale and counts as never done.
         - No patient data, screenshots with PHI, or secret values. Say where a secret lives, never what it is.
-        - Client-facing parts (sections 3, 4 and the handout) never name Availity or OpenEvidence.
+        - Client-facing parts (sections 3, 4 and the handout) never name third-party vendors. The exact list stays in the internal handoff standard.
         - Postmortem findings that apply to every automation update this standard, not just this doc.
 
   - type: input
@@ -104,7 +104,7 @@ body:
       label: 3. Baseline workflow
       description: |
         The "this is how we do it" flow we show the practice in the mapping session. One plain-language diagram or numbered list, written for the doctor and billers.
-        This is the part that stays the same. Client-facing: never name Availity or OpenEvidence.
+        This is the part that stays the same. Client-facing: never name third-party vendors.
       value: |
         1.
         2.
@@ -114,7 +114,7 @@ body:
     id: mapping-session
     attributes:
       label: 4. Mapping session
-      description: Client-facing — never name Availity or OpenEvidence.
+      description: Client-facing — never name third-party vendors.
       value: |
         - Who attends from LiLi and from the practice, and how long it takes:
         - The divergence questions: "Where does your process differ from this?" One question per step of the baseline:
@@ -278,7 +278,7 @@ body:
     id: capacity
     attributes:
       label: 15. Capacity
-      description: If maintenance and escalations take more than half the owner's month for 2 months in a row, tell Marcelo.
+      description: If maintenance and escalations take more than half the owner's month for 2 months in a row, tell the engineering lead.
       value: |
         - Practices one engineer can onboard per month for this automation: computed by the model from §6, §7, §13 and §14. Your judgment as a sanity check: p __ / e __ / o __.
         - Practices one engineer can keep running (maintenance + escalations) at the same time: p __ / e __ / o __.
@@ -297,8 +297,8 @@ body:
         | Check | By | Date |
         |---|---|---|
         | Peer review by another engineer | | |
-        | QA review | Mohit | |
-        | Cloud ops review (alerts, heartbeat, resources, declaration.yaml, access list) | Joydeep or Hamza | |
+        | QA review | QA | |
+        | Cloud ops review (alerts, heartbeat, resources, declaration.yaml, access list) | Cloud ops | |
         | Covering engineer did, with the owner watching but not touching: one pause or rollback drill, and one fix from §10 | | |
         | ops/estimates.yaml filled, every number has p / e / o and a basis | | |
 
