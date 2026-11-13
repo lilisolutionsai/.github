@@ -9,6 +9,7 @@ public `.github` repository — keep it free of anything not meant to be world-r
 ## Contents
 
 - `.github/ISSUE_TEMPLATE/developer-request.yml` — the Developer Request issue form.
+- `.github/ISSUE_TEMPLATE/automation-handoff.yml` — the Automation Handoff issue form (handoff standard v0.2).
 - `.github/ISSUE_TEMPLATE/config.yml` — disables blank issues so requests go through the form.
 
 A repository that adds its own `.github/ISSUE_TEMPLATE/` folder overrides these defaults entirely.
