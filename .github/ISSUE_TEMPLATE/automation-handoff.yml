@@ -1,0 +1,321 @@
+name: Automation Handoff
+description: Hand off an automation to support and a covering engineer (LiLi automation handoff standard v0.2).
+title: "[Handoff] <Automation name>"
+labels: ["automation-handoff"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **LiLi automation handoff standard, v0.2 (draft, 2026-11-13).**
+        Based on earlier automation handoffs; the internal handoff standard holds the full reference.
+        When signed off, copy this issue into `docs/HANDOFF.md` in the automation's repo, and fill `ops/estimates.yaml` from `ops-estimates.template.yaml`.
+
+        Keep this an index. Put long procedures in linked docs (operations.md, onboarding-guide.md, disaster-recovery.md) and link to them.
+
+        **Rules for every section**
+        - Every number has three values, p / e / o, and a basis: "measured" (name the practice and date, and how many practices) or "judgment".
+          p = pessimistic, e = MOST LIKELY (not the average), o = optimistic. The capacity model computes the mean as (o + 4e + p) / 6. Don't type it in.
+        - No "TBD" in owner, covering engineer or escalation. If it is not decided, write "OPEN" and the name of the person deciding.
+        - A drill or test date older than 12 months, or older than the last eCW upgrade, is stale and counts as never done.
+        - No patient data, screenshots with PHI, or secret values. Say where a secret lives, never what it is.
+        - Client-facing parts (sections 3, 4 and the handout) never name third-party vendors. The exact list stays in the internal handoff standard.
+        - Postmortem findings that apply to every automation update this standard, not just this doc.
+
+  - type: input
+    id: owner
+    attributes:
+      label: Owner (built it, answers for it)
+    validations:
+      required: true
+
+  - type: input
+    id: covering-engineer
+    attributes:
+      label: Covering engineer (has run it alone, see §16)
+      description: A name, or "OPEN" and the name of the person deciding. Never "TBD".
+    validations:
+      required: true
+
+  - type: input
+    id: practices-live
+    attributes:
+      label: Practices live
+
+  - type: textarea
+    id: criticality
+    attributes:
+      label: Criticality
+      description: What happens to a practice after 1 day / 1 week without this automation.
+      value: |
+        - After 1 day:
+        - After 1 week:
+    validations:
+      required: true
+
+  - type: input
+    id: last-reviewed
+    attributes:
+      label: Last reviewed
+      placeholder: YYYY-MM-DD, by
+
+  - type: input
+    id: next-review
+    attributes:
+      label: Next review
+      value: after the next eCW upgrade, after the 3rd practice onboarded with this doc, or in 3 months, whichever comes first
+
+  - type: markdown
+    attributes:
+      value: "## Part 1 — Understand it"
+
+  - type: textarea
+    id: what-this-is
+    attributes:
+      label: 1. What this is
+      description: |
+        One paragraph a practice manager would understand: what the automation does for the practice, what it produces, how often it runs.
+        Then one paragraph for an engineer: trigger, inputs, outputs, where results land.
+      value: |
+        **For the practice:**
+
+        **For an engineer:**
+    validations:
+      required: true
+
+  - type: textarea
+    id: architecture
+    attributes:
+      label: 2. Architecture and boundaries
+      description: §11 has to be able to undo every record listed under "What it writes".
+      value: |
+        - Architecture diagram (Archify). One picture: components, data flow, external systems, which GCP project:
+        - Where this system ends: shared components it depends on (eCW connector, browser token retriever, clearinghouse, voice provider…) and who owns each:
+        - What it writes, and where: every record type it creates or changes in eCW, at a payer, or in our systems:
+        - Data held: types of PHI, where stored, how long, how it is backed up. Link to `cloudops/declaration.yaml` where it already says this:
+        - Read in this order: PRD / SOW / SRS, ADRs, and where work and decisions live (repo issues, LiLi PM project):
+
+  - type: markdown
+    attributes:
+      value: "## Part 2 — Onboard a practice"
+
+  - type: textarea
+    id: baseline-workflow
+    attributes:
+      label: 3. Baseline workflow
+      description: |
+        The "this is how we do it" flow we show the practice in the mapping session. One plain-language diagram or numbered list, written for the doctor and billers.
+        This is the part that stays the same. Client-facing: never name third-party vendors.
+      value: |
+        1.
+        2.
+        3.
+
+  - type: textarea
+    id: mapping-session
+    attributes:
+      label: 4. Mapping session
+      description: Client-facing — never name third-party vendors.
+      value: |
+        - Who attends from LiLi and from the practice, and how long it takes:
+        - The divergence questions: "Where does your process differ from this?" One question per step of the baseline:
+        - Volumes: typical daily and peak volume for this module, and the 5 most common exceptions today and how staff handle them:
+        - What we need from the practice: accounts, credentials, documents, fee schedules, staff time, and the named person who signs off in step 5:
+        - Practice handout (one page, plain language, no vendor names):
+
+  - type: textarea
+    id: per-practice-changes
+    attributes:
+      label: 5. What changes per practice
+      value: |
+        | Setting or behavior | Changed by configuration or by code | Who changes it | Example from a past practice |
+        |---|---|---|---|
+        | | | | |
+
+        Share of the automation that changed at past practices: p __% / e __% / o __% (basis: ).
+
+  - type: textarea
+    id: onboarding-steps
+    attributes:
+      label: 6. Onboarding steps and estimates
+      description: |
+        - Engineer hours = hands-on work. They set cost. Calendar days = elapsed time including waiting. They set what we promise the doctor.
+        - "Runs after" shows which steps can overlap. Calendar time is the longest chain, not the sum of all rows.
+        - What we promise: before the mapping session, give the practice a range (o to p days). Commit to a go-live date only after steps 1 and 2 are done.
+      value: |
+        | # | Step | Who | Engineer hours (p / e / o) | Calendar days (p / e / o) | Runs after | Waits on | Basis |
+        |---|---|---|---|---|---|---|---|
+        | 1 | Mapping session | | | | — | practice | |
+        | 2 | Access and accounts | | | | 1 | practice, cloud ops | |
+        | 3 | Configuration and code changes | | | | 1 | | |
+        | 4 | Test with real data (draft mode) | | | | 2, 3 | | |
+        | 5 | Practice signer checks output | | | | 4 | practice | |
+        | 6 | Go live | | | | 5 | | |
+        | 7 | Training material handed over | | | | 3 | | |
+
+        Step 5, practice sign-off: the signer (name, role) checks __ items from a typical day, plus a peak day if the module has one (remittance batch, month-end). Pass = __ or fewer discrepancies per 100 items, none critical. Signed and dated.
+
+        Go-live checklist: link, or list it here.
+
+  - type: textarea
+    id: hypercare
+    attributes:
+      label: 7. Hypercare and handoff to support
+      value: |
+        - Length: p __ / e __ / o __ days. Engineer hours per week during hypercare: p __ / e __ / o __.
+        - Daily checks during hypercare:
+        - Exit criteria, all measurable:
+          - [ ] __ consecutive clean runs
+          - [ ] error rate under __%
+          - [ ] no open critical issue
+          - [ ] support has handled at least one incident using this doc without the owner
+          - [ ] the practice has the support contact and knows the response times
+        - Who can extend hypercare, and on what grounds:
+        - Handoff meeting: who from support attends, date held:
+        - Handoff note: open issues, recent changes, planned follow-ups:
+
+  - type: markdown
+    attributes:
+      value: "## Part 3 — Run it"
+
+  - type: textarea
+    id: normal-day
+    attributes:
+      label: 8. A normal day
+      description: Alerts nobody acted on are removed or downgraded at the monthly review.
+      value: |
+        - What is watched, by whom, when. Dashboards and reports, with links:
+        - Alert load: alerts per week over the last 4 weeks:
+
+  - type: textarea
+    id: alerts
+    attributes:
+      label: 9. Alerts
+      description: |
+        An alert nobody has seen fire does not count. Every alert links to a runbook entry.
+        Every practice has the heartbeat alert, because the worst failure is a run that silently never happened.
+      value: |
+        | Alert | What the practice would notice | Urgency (now / business hours / FYI) | Runbook entry (link) | Who receives it | Last test-fired (date) |
+        |---|---|---|---|---|---|
+        | Heartbeat, per practice: scheduled run did not finish or produced nothing | | now | | | |
+
+  - type: textarea
+    id: when-it-breaks
+    attributes:
+      label: 10. When something breaks
+      description: |
+        Tiers: non-technical VA → technical VA → application engineer → engineering & platform. The more failures a lower tier can handle, the cheaper support is.
+        Mark a failure "engineering only" only if a runbook step cannot make it lower.
+
+        A postmortem is required when: wrong data was written to eCW or sent to a payer; PHI went somewhere it shouldn't; we rolled back; a practice lost a full day of output; or an alert failed to fire.
+        Follow-up actions get an owner and a due date.
+      value: |
+        | Failure | How we notice | Fix (runbook link) | Lowest support tier that can fix it | Typical time to fix | Runbook followed by someone other than its author (name, date) |
+        |---|---|---|---|---|---|
+        | | | | | | |
+
+        Postmortems: link.
+
+  - type: textarea
+    id: stop-change-rollback
+    attributes:
+      label: 11. Stop it, change it, roll it back
+      description: A rollback or undo never exercised does not count.
+      value: |
+        - Pause one practice. Pause everything. Draft mode / disarm writes:
+        - Release path and how to verify a change. Changes that affect more than one practice go first to the canary practice (__) and run there for __ business days, at least one full cycle, before the rest. Stop rule: __.
+        - Rollback of the code: steps, and last exercised (date):
+        - Undo what it wrote: how to list every record this automation created or changed at a practice in a time window (where the write log lives), and how to reverse or correct each record type from §2. Last exercised (date):
+
+  - type: textarea
+    id: downtime-restart
+    attributes:
+      label: 11b. Downtime and restart
+      value: |
+        - While it is down: what the practice does by hand, and who does it:
+        - How long the practice can manage that way: p __ / e __ / o __ days.
+        - Restart after an outage of eCW or of the automation: the order the backlog runs in, how duplicates are prevented, who confirms the catch-up is complete:
+
+  - type: textarea
+    id: access-people
+    attributes:
+      label: 12. Access and people
+      description: Where each secret lives, never its value. Escalation uses names, not roles.
+      value: |
+        - Access needed by role (support tiers, covering engineer, cloud ops). Where each secret lives:
+        - Access list (person, role, systems, practice): last reviewed __ by __.
+        - Removing access when someone leaves or a practice offboards: steps and owner. Automation accounts at each practice: who at the practice can disable them:
+        - Escalation path with names, not roles:
+        - Practice contacts: who talks to the practice:
+
+  - type: markdown
+    attributes:
+      value: "## Part 4 — Maintain it"
+
+  - type: textarea
+    id: routine-maintenance
+    attributes:
+      label: 13. Routine maintenance
+      description: |
+        Include credential rotation, payer or code table updates, log review, dependency and model version updates, practice offboarding,
+        and the drills from §9–§11 (at least every 12 months and after every eCW upgrade).
+      value: |
+        | Task | Cadence | Engineer hours each time (p / e / o) | Per system or per practice | Who |
+        |---|---|---|---|---|
+        | | | | | |
+
+  - type: textarea
+    id: upstream-changes
+    attributes:
+      label: 14. Upstream changes that can break it
+      value: |
+        | Change | How often per year (p / e / o) | Where we hear first | How we detect it | Engineer hours to adapt (p / e / o) | Blast radius |
+        |---|---|---|---|---|---|
+        | eCW version upgrade | | | | | one practice / all on that version / all |
+        | Payer or portal change | | | | | |
+        | Model or vendor API change | | | | | |
+
+  - type: textarea
+    id: capacity
+    attributes:
+      label: 15. Capacity
+      description: If maintenance and escalations take more than half the owner's month for 2 months in a row, tell the engineering lead.
+      value: |
+        - Practices one engineer can onboard per month for this automation: computed by the model from §6, §7, §13 and §14. Your judgment as a sanity check: p __ / e __ / o __.
+        - Practices one engineer can keep running (maintenance + escalations) at the same time: p __ / e __ / o __.
+        - What limits this today (frictions), and what would raise it (templates, scripts, moving a step to support):
+
+  - type: markdown
+    attributes:
+      value: "## Part 5 — Prove it"
+
+  - type: textarea
+    id: sign-off
+    attributes:
+      label: 16. Sign-off
+      description: Any "no" blocks sign-off, unless it has a written mitigation and a fix date that QA approves.
+      value: |
+        | Check | By | Date |
+        |---|---|---|
+        | Peer review by another engineer | | |
+        | QA review | QA | |
+        | Cloud ops review (alerts, heartbeat, resources, declaration.yaml, access list) | Cloud ops | |
+        | Covering engineer did, with the owner watching but not touching: one pause or rollback drill, and one fix from §10 | | |
+        | ops/estimates.yaml filled, every number has p / e / o and a basis | | |
+
+        Open findings: link.
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Actuals
+        Each practice's real hours and calendar days per step go into `actuals` in ops/estimates.yaml (practice slug only, no PHI), along with monthly maintenance and escalation hours.
+        After the third practice, replace "judgment" numbers with measured ones.
+
+  - type: textarea
+    id: later
+    attributes:
+      label: Later (by end of Q1 2027; now for the AI scribe)
+      value: |
+        - **AI components:** model and version pinned; who reviews output before release; what is monitored (reviewer edit or override rate); evaluation set re-run on any model or prompt change (last run date); how to switch the AI step off.
+        - **Synthetic check:** a daily dry run against each portal or eCW version, writing no PHI, so upstream changes are caught before a practice notices.
+        - **Rebuild or retire review:** triggered when upstream-change hours pass __ a year, a supported API becomes available, or maintenance takes more than __% of the time the automation saves.
